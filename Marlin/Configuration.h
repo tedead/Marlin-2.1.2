@@ -135,13 +135,15 @@
 //#define BLUETOOTH
 
 // Name displayed in the LCD "Ready" message and Info menu
-#define CUSTOM_MACHINE_NAME "SKR mini E3 3.0 v1.5"
+#define CUSTOM_MACHINE_NAME "SKR mini E3 3.0 v1.7"
 //v1.1 Increase #define BLTOUCH_DELAY 200 to #define BLTOUCH_DELAY 500
 //v1.2 Enabled sensorless homing
 //v1.3 Disabled sensorless homing. Enabled #define ENDSTOP_INTERRUPTS_FEATURE. Reenabled #define MIN_SOFTWARE_ENDSTOP_Z
 //     Set BED_TRAMMING_HEIGHT = 0.0 down from BED_TRAMMING_HEIGHT = 5.0
 //v1.4 Disable #define MIN_SOFTWARE_ENDSTOP_Z
 //v1.5 Upgraded to Marlin 2.1.2
+//v1.6 Enabled #define INPUT_SHAPING_X and #define INPUT_SHAPING_Y
+//v1.7 Set shaping x & y. Also changed Z probe offset to -0.7. And set bilinear probe of 64.
 
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like https://www.uuidgenerator.net/version4
@@ -1489,7 +1491,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { -43, -13, -0.60 }
+#define NOZZLE_TO_PROBE_OFFSET { -43, -13, -0.70 } //z was -0.6
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1959,7 +1961,7 @@
 #if EITHER(AUTO_BED_LEVELING_LINEAR, AUTO_BED_LEVELING_BILINEAR)
 
   // Set the number of grid points per dimension.
-  #define GRID_MAX_POINTS_X 5
+  #define GRID_MAX_POINTS_X 8
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
   // Probe along the Y axis, advancing X after each column
