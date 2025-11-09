@@ -87,7 +87,7 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_BTT_SKR_MINI_E3_V3_0
+  #define MOTHERBOARD BOARD_BTT_SKR_V1_4_TURBO
 #endif
 
 /**
@@ -98,7 +98,7 @@
  *
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
-#define SERIAL_PORT 2 //TFT
+#define SERIAL_PORT -1 //USB, this was 2 (TFT)
 
 /**
  * Serial Port Baud Rate
@@ -111,7 +111,7 @@
  *
  * :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000]
  */
-#define BAUDRATE 115200
+#define BAUDRATE 250000
 
 //#define BAUD_RATE_GCODE     // Enable G-code M575 to set the baud rate
 
@@ -120,8 +120,8 @@
  * Currently Ethernet (-2) is only supported on Teensy 4.1 boards.
  * :[-2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
-#define SERIAL_PORT_2 -1 //USB
-#define BAUDRATE_2 115200   // :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000] Enable to override BAUDRATE
+#define SERIAL_PORT_2 0 //TFT, this was set to -1 (USB)
+#define BAUDRATE_2 250000   // :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000] Enable to override BAUDRATE
 
 /**
  * Select a third serial port on the board to use for communication with the host.
@@ -135,15 +135,49 @@
 //#define BLUETOOTH
 
 // Name displayed in the LCD "Ready" message and Info menu
-#define CUSTOM_MACHINE_NAME "SKR mini E3 3.0 v1.7"
-//v1.1 Increase #define BLTOUCH_DELAY 200 to #define BLTOUCH_DELAY 500
-//v1.2 Enabled sensorless homing
-//v1.3 Disabled sensorless homing. Enabled #define ENDSTOP_INTERRUPTS_FEATURE. Reenabled #define MIN_SOFTWARE_ENDSTOP_Z
-//     Set BED_TRAMMING_HEIGHT = 0.0 down from BED_TRAMMING_HEIGHT = 5.0
-//v1.4 Disable #define MIN_SOFTWARE_ENDSTOP_Z
-//v1.5 Upgraded to Marlin 2.1.2
-//v1.6 Enabled #define INPUT_SHAPING_X and #define INPUT_SHAPING_Y
-//v1.7 Set shaping x & y. Also changed Z probe offset to -0.7. And set bilinear probe of 64.
+
+#define CUSTOM_MACHINE_NAME "SKR 1.4 Turbo Laser v1.5"
+
+//v1.1 #define SPINDLE_LASER_USE_PWM  #define SPINDLE_LASER_PWM_PIN P2_03 #define LASER_FEATURE. Disable //#define FANMUX0_PIN P2_03 //FAN0
+//In pins_BTT_SKR_common.h disable   //#define FAN_PIN                          P2_03
+
+//v1.2 - From https://forum.v1e.com/t/laser-wiring-for-skr-1-4-turbo/34915/6
+//Change #define SPINDLE_LASER_ACTIVE_STATE    LOW to #define SPINDLE_LASER_ACTIVE_STATE    HIGH
+//Changed #define SPEED_POWER_STARTUP        80 to #define SPEED_POWER_STARTUP        15
+//Enabled #define LASER_POWER_TRAP
+//Added #define SPINDLE_LASER_ENA_PIN  P4_29   // WIFI block - Not actually used
+//Disabled #define SPINDLE_LASER_FREQUENCY     2500
+
+//v1.3 Went back to using M106 commands with laser attached on P2_03 fan port
+
+//v1.4 Begin Changes:
+
+//Enable laser feature
+/*
+#define LASER_FEATURE
+#define SPINDLE_LASER_USE_PWM
+#define SPINDLE_LASER_ENABLE_PIN   P2_04   // optional "Enable" line (HE1)
+#define SPINDLE_LASER_PWM_PIN      P2_07   // PWM signal on HE0
+#define SPINDLE_LASER_ACTIVE_STATE HIGH
+#define SPINDLE_LASER_FREQUENCY    5000
+#define LASER_POWER_TRAP
+
+Remove or comment out any fan-based laser lines:
+
+//#define FANMUX0_PIN P2_03
+
+
+You can leave CUSTOM_MACHINE_NAME as-is.
+
+In Configuration_adv.h
+
+Ensure FAST_PWM_FAN is disabled (since you’re not using the fan for PWM).
+Verify no other features use pins P2_00 or P2_04.
+*/
+//v1.4 End changes
+
+//v1.5 Changed SPINDLE_LASER_PWM_PIN to P2_00 for 3.33V/5v PWM signal
+
 
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like https://www.uuidgenerator.net/version4
@@ -675,9 +709,9 @@
     #define DEFAULT_Ki_LIST {   1.08,   1.08 }
     #define DEFAULT_Kd_LIST { 114.00, 114.00 }
   #else
-    #define DEFAULT_Kp 33.53
-    #define DEFAULT_Ki 4.16
-    #define DEFAULT_Kd 67.50
+    #define DEFAULT_Kp 41.97
+    #define DEFAULT_Ki 7.18
+    #define DEFAULT_Kd 61.32
   #endif
 #endif
 
@@ -760,9 +794,9 @@
 
   // 120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
-  #define DEFAULT_bedKp 144.58
-  #define DEFAULT_bedKi 28.89
-  #define DEFAULT_bedKd 482.42
+  #define DEFAULT_bedKp 101.99
+  #define DEFAULT_bedKi 17.23
+  #define DEFAULT_bedKd 402.50
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
@@ -1132,7 +1166,7 @@
 
 // Enable this feature if all enabled endstop pins are interrupt-capable.
 // This will remove the need to poll the interrupt pins, saving many CPU cycles.
-#define ENDSTOP_INTERRUPTS_FEATURE
+//#define ENDSTOP_INTERRUPTS_FEATURE
 
 /**
  * Endstop Noise Threshold
@@ -1302,7 +1336,7 @@
  *      - normally-closed switches to GND and D32.
  *      - normally-open switches to 5V and D32.
  */
-#define Z_MIN_PROBE_PIN PC14 // Pin 32 is the RAMPS default
+#define Z_MIN_PROBE_PIN P0_10 // Pin 32 is the RAMPS default
 
 /**
  * Probe Type
@@ -1339,7 +1373,7 @@
 /**
  * The BLTouch probe uses a Hall effect sensor and emulates a servo.
  */
-#define BLTOUCH
+//#define BLTOUCH
 
 /**
  * MagLev V4 probe by MDD
@@ -1491,7 +1525,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { -43, -13, -0.70 } //z was -0.6
+#define NOZZLE_TO_PROBE_OFFSET { -43, -13, -0.6 } //z was -0.6. Went to -0.9 after new BLTouch v3.1 install
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1573,7 +1607,7 @@
 #define Z_CLEARANCE_MULTI_PROBE     5 // Z Clearance between multiple probes
 //#define Z_AFTER_PROBING           5 // Z position after probing is done
 
-#define Z_PROBE_LOW_POINT          -2 // Farthest distance below the trigger-point to go before stopping
+#define Z_PROBE_LOW_POINT          -5 // Farthest distance below the trigger-point to go before stopping
 
 // For M851 give a range for adjusting the Z probe offset
 #define Z_PROBE_OFFSET_RANGE_MIN -20
@@ -1881,7 +1915,7 @@
  */
 //#define AUTO_BED_LEVELING_3POINT
 //#define AUTO_BED_LEVELING_LINEAR
-#define AUTO_BED_LEVELING_BILINEAR
+//#define AUTO_BED_LEVELING_BILINEAR
 //#define AUTO_BED_LEVELING_UBL
 //#define MESH_BED_LEVELING
 
@@ -1896,7 +1930,7 @@
 /**
  * Auto-leveling needs preheating
  */
-#define PREHEAT_BEFORE_LEVELING
+//#define PREHEAT_BEFORE_LEVELING
 #if ENABLED(PREHEAT_BEFORE_LEVELING)
   #define LEVELING_NOZZLE_TEMP 120   // (°C) Only applies to E0 at this time
   #define LEVELING_BED_TEMP     50
@@ -1916,7 +1950,7 @@
  * Turn on with the command 'M111 S32'.
  * NOTE: Requires a lot of PROGMEM!
  */
-//#define DEBUG_LEVELING_FEATURE
+#define DEBUG_LEVELING_FEATURE
 
 #if ANY(MESH_BED_LEVELING, AUTO_BED_LEVELING_UBL, PROBE_MANUALLY)
   // Set a height for the start of manual adjustment
@@ -1961,7 +1995,7 @@
 #if EITHER(AUTO_BED_LEVELING_LINEAR, AUTO_BED_LEVELING_BILINEAR)
 
   // Set the number of grid points per dimension.
-  #define GRID_MAX_POINTS_X 8
+  #define GRID_MAX_POINTS_X 5
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
   // Probe along the Y axis, advancing X after each column
@@ -2025,7 +2059,7 @@
  * Add a bed leveling sub-menu for ABL or MBL.
  * Include a guided procedure if manual probing is enabled.
  */
-#define LCD_BED_LEVELING
+//#define LCD_BED_LEVELING
 
 #if ENABLED(LCD_BED_LEVELING)
   #define MESH_EDIT_Z_STEP  0.025 // (mm) Step size while manually probing Z axis.
@@ -2740,7 +2774,7 @@
 // RepRapDiscount FULL GRAPHIC Smart Controller
 // https://reprap.org/wiki/RepRapDiscount_Full_Graphic_Smart_Controller
 //
-//#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
+#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
 
 //
 // K.3D Full Graphic Smart Controller
@@ -2847,7 +2881,7 @@
 // This is RAMPS-compatible using a single 10-pin connector.
 // (For CR-10 owners who want to replace the Melzi Creality board but retain the display)
 //
-#define CR10_STOCKDISPLAY
+//#define CR10_STOCKDISPLAY
 
 //
 // Ender-2 OEM display, a variant of the MKS_MINI_12864
@@ -3231,7 +3265,7 @@
 // However, control resolution will be halved for each increment;
 // at zero value, there are 128 effective control positions.
 // :[0,1,2,3,4,5,6,7]
-#define SOFT_PWM_SCALE 0
+//#define SOFT_PWM_SCALE 0
 
 // If SOFT_PWM_SCALE is set to a value higher than 0, dithering can
 // be used to mitigate the associated resolution loss. If enabled,
@@ -3353,7 +3387,7 @@
  * Set this manually if there are extra servos needing manual control.
  * Set to 0 to turn off servo support.
  */
-//#define NUM_SERVOS 3 // Note: Servo index starts with 0 for M280-M282 commands
+//#define NUM_SERVOS 1 // Note: Servo index starts with 0 for M280-M282 commands
 
 // (ms) Delay before the next move will start, to give the servo time to reach its target angle.
 // 300ms is a good value but you can try less delay.
